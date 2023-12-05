@@ -1,0 +1,1 @@
+powershell -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/ppigazzini/stockfish-downloader/main/windows_helper.ps1'))"

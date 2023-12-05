@@ -1,0 +1,35 @@
+name: windows helper
+on: [push, pull_request]
+jobs:
+  test:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            shell: powershell
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: CPU flags
+        run: |
+          $ProgressPreference = 'SilentlyContinue'
+          Invoke-WebRequest -Uri https://download.sysinternals.com/files/Coreinfo.zip -OutFile .\Coreinfo.zip
+          Expand-Archive -Path .\Coreinfo.zip -DestinationPath "."
+          Start-Process -FilePath .\Coreinfo.exe -ArgumentList "/accepteula" -Wait
+          $coreinfo_output = & .\Coreinfo.exe -f | Out-String
+          $flags = $coreinfo_output -split "`n" | Where-Object { $_ -match "^([\w\.\-]+)\s+\*\s+.*$" } | ForEach-Object { $Matches[1] }
+          Write-Output "$flags"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run script
+        run: .\windows_helper.ps1
+      - name: Unarchive downloaded file
+        run: |
+          $archive_name = Get-ChildItem "stockfish-*.zip"
+          Expand-Archive -Path $archive_name.FullName -DestinationPath "."
+          $binary_name = [System.IO.Path]::GetFileNameWithoutExtension($archive_name)
+          echo "binary_name=$binary_name" | Out-File -FilePath $env:GITHUB_ENV -Append
+      - name: Run stockfish compiler
+        run: ./stockfish/${{ env.binary_name }}.exe compiler
