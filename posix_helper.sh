@@ -68,7 +68,7 @@ case $uname_s in
       'aarch64')
         file_os='android'
         file_arch='armv8'
-        if check_flags 'dotprod'; then
+        if check_flags 'asimddp'; then
           file_arch="$file_arch-dotprod"
         fi
         ;;
