@@ -40,6 +40,23 @@ $file_name = "stockfish-windows-$file_arch.zip"
 
 # Download the file
 Write-Output "Downloading $file_name ..."
-Invoke-WebRequest -Uri "$base_url/$file_name" -OutFile "$file_name"
-Write-Output "Done"
+$maxRetries = 5
+$retryDelay = 5
+$attempt = 0
 
+while ($attempt -le $maxRetries) {
+    try {
+        Invoke-WebRequest -Uri "$base_url/$file_name" -OutFile "$file_name"
+        Write-Output "Done."
+        break
+    } catch {
+        if ($attempt -eq $maxRetries) {
+            Write-Output "Download failed after $($maxRetries + 1) attempts."
+            exit 1
+        } else {
+            Write-Output "Download failed. Will retry in $retryDelay seconds. ($($maxRetries - $attempt) retries left.)"
+            Start-Sleep -Seconds $retryDelay
+            $attempt++
+        }
+    }
+}

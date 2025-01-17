@@ -1,7 +1,7 @@
 # stockfish-downloader
 [![posix helper](https://github.com/ppigazzini/stockfish-downloader/actions/workflows/posix_helper.yml/badge.svg)](https://github.com/ppigazzini/stockfish-downloader/actions/workflows/posix_helper.yml)
 [![windows helper](https://github.com/ppigazzini/stockfish-downloader/actions/workflows/windows_helper.yml/badge.svg)](https://github.com/ppigazzini/stockfish-downloader/actions/workflows/windows_helper.yml)
-[![arm helper](https://github.com/ppigazzini/stockfish-downloader/actions/workflows/arm_helper.yml/badge.svg)](https://github.com/ppigazzini/stockfish-downloader/actions/workflows/arm_helper.yml)
+[![docker helper](https://github.com/ppigazzini/stockfish-downloader/actions/workflows/docker_helper.yml/badge.svg)](https://github.com/ppigazzini/stockfish-downloader/actions/workflows/docker_helper.yml)
 
 Scripts to download the [latest official pre-release/release](https://github.com/official-stockfish/Stockfish/releases) of the Stockfish chess engine built with the best compiling flags for your CPU.
 
@@ -23,7 +23,7 @@ Scripts to download the [latest official pre-release/release](https://github.com
 - file: [posix_stockfish_downloader.sh](https://github.com/ppigazzini/stockfish-downloader/blob/main/posix_stockfish_downloader.sh)
 - content:
   ```sh
-  curl -sSL https://raw.githubusercontent.com/ppigazzini/stockfish-downloader/main/posix_helper.sh | sh -s
+  curl -fsSL https://raw.githubusercontent.com/ppigazzini/stockfish-downloader/main/posix_helper.sh | sh -s
   ```
 - usage: copy and paste the script content in a shell, or download and run the script file
 ### Script Windows

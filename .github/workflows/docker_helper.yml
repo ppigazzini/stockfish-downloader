@@ -1,4 +1,4 @@
-name: arm helper
+name: docker helper
 on: [push, pull_request]
 jobs:
   test:
@@ -10,7 +10,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -20,7 +20,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - name: Build Docker image
         run: |
-          docker buildx build --load -t downloader - << EOF
+          docker buildx build --platform ${{ matrix.platform }} --load -t downloader - << EOF
           FROM ${{ matrix.base_image }}
           WORKDIR /app
           RUN apk update && apk add curl
