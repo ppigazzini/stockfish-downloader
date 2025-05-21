@@ -12,7 +12,7 @@ Scripts to download the [latest official pre-release/release](https://github.com
 | Android | aarch64, armv7 | POSIX |
 | macOS | x86_64, arm64 | POSIX |
 | Windows: WSL | x86_64 | POSIX |
-| Windows: MSYS2, Cygwin | x86_64 | POSIX |
+| Windows: MSYS2, Cygwin | x86_64, aarch64 | POSIX |
 | Windows | x86_64 | Windows |
 
 ## Usage

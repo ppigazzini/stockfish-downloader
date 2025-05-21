@@ -29,13 +29,19 @@ jobs:
             extract_cmd: unzip
             ext: '.zip'
             exe: '.exe'
+          - os: windows-11-arm
+            shell: msys2 {0}
+            flags_cmd: awk '/^flags[ \t]*:|^Features[ \t]*:/{gsub(/^flags[ \t]*:[ \t]*|^Features[ \t]*:[ \t]*|[_.]/, ""); line=$0} END{print line}' /proc/cpuinfo
+            extract_cmd: unzip
+            ext: '.zip'
+            exe: '.exe'
     defaults:
       run:
         shell: ${{ matrix.shell }}
     runs-on: ${{ matrix.os }}
     steps:
       - name: Setup msys and install required packages
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows-latest' || matrix.os == 'windows-11-arm'
         uses: msys2/setup-msys2@v2
         with:
           install: unzip
@@ -44,6 +50,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Run script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: sh ./posix_helper.sh
       - name: Unarchive the downloaded file
         run: |

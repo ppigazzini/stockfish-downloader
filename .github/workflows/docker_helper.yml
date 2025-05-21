@@ -27,7 +27,7 @@ jobs:
           CMD ["sh", "posix_helper.sh"]
           EOF
       - name: Run Docker container
-        run: docker run --rm --platform ${{ matrix.platform }} -v ${{ github.workspace }}:/app downloader
+        run: docker run --rm --platform ${{ matrix.platform }} -v ${{ github.workspace }}:/app -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} downloader
       - name: Unarchive the downloaded file
         run: |
           archive_name=$(ls stockfish-*.tar 2>/dev/null)

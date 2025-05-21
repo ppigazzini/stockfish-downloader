@@ -39,7 +39,7 @@ $base_url = "https://github.com/official-stockfish/Stockfish/releases/download/$
 $file_name = "stockfish-windows-$file_arch.zip"
 
 # Download the file
-Write-Output "Downloading $file_name ..."
+Write-Output "Downloading $base_url/$file_name ..."
 $maxRetries = 5
 $retryDelay = 5
 $attempt = 0
