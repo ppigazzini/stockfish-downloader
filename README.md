@@ -10,10 +10,10 @@ Scripts to download the [latest official pre-release/release](https://github.com
 | --- | --- | --- |
 | Linux | x86_64, x86_32, aarch64, armv7 | POSIX |
 | Android | aarch64, armv7 | POSIX |
-| macOS | x86_64, arm64 | POSIX |
+| macOS | x86_64, aarch64 | POSIX |
 | Windows: WSL | x86_64 | POSIX |
 | Windows: MSYS2, Cygwin | x86_64, aarch64 | POSIX |
-| Windows | x86_64 | Windows |
+| Windows | x86_64, aarch64 | Windows |
 
 ## Usage
 - download the script for your Operating System, run it with a terminal or;
