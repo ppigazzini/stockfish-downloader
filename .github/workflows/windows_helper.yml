@@ -1,11 +1,14 @@
 name: windows helper
 on: [push, pull_request]
+permissions: read-all
 jobs:
   test:
     strategy:
       matrix:
         include:
           - os: windows-latest
+            shell: powershell
+          - os: windows-11-arm
             shell: powershell
     defaults:
       run:
@@ -15,14 +18,50 @@ jobs:
       - name: CPU flags
         run: |
           $ProgressPreference = 'SilentlyContinue'
-          Invoke-WebRequest -Uri https://download.sysinternals.com/files/Coreinfo.zip -OutFile .\Coreinfo.zip
-          Expand-Archive -Path .\Coreinfo.zip -DestinationPath "."
-          Start-Process -FilePath .\Coreinfo.exe -ArgumentList "/accepteula" -Wait
-          $coreinfo_output = & .\Coreinfo.exe -f | Out-String
-          $flags = $coreinfo_output -split "`n" | Where-Object { $_ -match "^([\w\.\-]+)\s+\*\s+.*$" } | ForEach-Object { $Matches[1] }
-          Write-Output "$flags"
+          $osArch = [System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture
+          Write-Output ("runner_os_arch=" + $osArch)
+          try {
+            $temp_dir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
+            New-Item -ItemType Directory -Force -Path $temp_dir | Out-Null
+
+            $coreinfo_url = "https://download.sysinternals.com/files/Coreinfo.zip"
+            $coreinfo_path = Join-Path $temp_dir "Coreinfo.zip"
+            Invoke-WebRequest -Uri $coreinfo_url -OutFile $coreinfo_path -ErrorAction Stop
+            Expand-Archive -Path $coreinfo_path -DestinationPath $temp_dir -ErrorAction Stop
+
+            $coreinfo_exe = switch ($osArch) {
+              ([System.Runtime.InteropServices.Architecture]::X86) { Join-Path $temp_dir "Coreinfo.exe" }
+              ([System.Runtime.InteropServices.Architecture]::X64) { Join-Path $temp_dir "Coreinfo64.exe" }
+              ([System.Runtime.InteropServices.Architecture]::Arm64) { Join-Path $temp_dir "Coreinfo64a.exe" }
+              default { Join-Path $temp_dir "Coreinfo64.exe" }
+            }
+            if (!(Test-Path -LiteralPath $coreinfo_exe)) {
+              # Best-effort fallback (Sysinternals bundle contents can vary)
+              $coreinfo_exe = Join-Path $temp_dir "Coreinfo.exe"
+            }
+            $flags = @()
+            try {
+              $coreinfo_output_flags = & $coreinfo_exe /accepteula -f | ForEach-Object { $_ }
+              $flags = ($coreinfo_output_flags | ForEach-Object {
+                $l = $_.Trim()
+                if ($l -match "\*") { ($l -split "\s+")[0] }
+              }) | Sort-Object -Unique
+            }
+            catch {
+              Write-Output ("Coreinfo execution failed (continuing): " + $_.Exception.Message)
+            }
+
+            # Normalize flags like windows_helper.ps1 / get_native_properties.sh
+            $flags = ($flags | ForEach-Object { $_.ToLowerInvariant() -replace "[-_.]", "" }) | Sort-Object -Unique
+            Write-Output $flags
+          }
+          finally {
+            if ($null -ne $temp_dir -and (Test-Path -LiteralPath $temp_dir)) {
+              Remove-Item -LiteralPath $temp_dir -Recurse -Force -ErrorAction SilentlyContinue
+            }
+          }
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Run script
         run: .\windows_helper.ps1
       - name: Unarchive downloaded file

@@ -1,5 +1,6 @@
 name: posix helper
 on: [push, pull_request]
+permissions: read-all
 jobs:
   test:
     strategy:
@@ -8,12 +9,6 @@ jobs:
           - os: ubuntu-24.04
             shell: bash
             flags_cmd: awk '/^flags[ \t]*:|^Features[ \t]*:/{gsub(/^flags[ \t]*:[ \t]*|^Features[ \t]*:[ \t]*|[_.]/, ""); line=$0} END{print line}' /proc/cpuinfo
-            extract_cmd: tar -xvf
-            ext: '.tar'
-            exe: ''
-          - os: macos-13
-            shell: bash
-            flags_cmd: sysctl -n machdep.cpu.features machdep.cpu.leaf7_features | tr '\n' ' ' | tr '[:upper:]' '[:lower:]' | tr -d '_.'
             extract_cmd: tar -xvf
             ext: '.tar'
             exe: ''
@@ -48,7 +43,7 @@ jobs:
       - name: CPU flags
         run: ${{ matrix.flags_cmd }}
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Run script
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
