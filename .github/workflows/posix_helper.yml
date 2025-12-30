@@ -12,6 +12,12 @@ jobs:
             extract_cmd: tar -xvf
             ext: '.tar'
             exe: ''
+          - os: macos-15-intel
+            shell: bash
+            flags_cmd: sysctl -n machdep.cpu.features machdep.cpu.leaf7_features | tr '\n' ' ' | tr '[:upper:]' '[:lower:]' | tr -d '_.'
+            extract_cmd: tar -xvf
+            ext: '.tar'
+            exe: ''
           - os: macos-15
             shell: bash
             flags_cmd: sysctl -a | awk '/hw.optional/ && $2 == 1 {print $1}' | awk -F. '{print $NF}' | awk '{gsub(/^FEAT/, ""); print}' | tr -d ':' | tr '\n' ' ' | tr '[:upper:]' '[:lower:]' | tr -d '_.'
