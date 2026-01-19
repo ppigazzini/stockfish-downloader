@@ -3,11 +3,12 @@ on: [push, pull_request]
 permissions: read-all
 jobs:
   test:
+    name: docker helper — ${{ matrix.label }}
     strategy:
       matrix:
         include:
-          - { base_image: arm32v7/alpine, platform: linux/arm/v7 }
-          - { base_image: arm64v8/alpine, platform: linux/arm64/v8 }
+          - { base_image: arm32v7/alpine, platform: linux/arm/v7, label: armv7 }
+          - { base_image: arm64v8/alpine, platform: linux/arm64/v8, label: arm64 }
     defaults:
       run:
         shell: bash

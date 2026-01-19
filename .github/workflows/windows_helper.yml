@@ -3,12 +3,15 @@ on: [push, pull_request]
 permissions: read-all
 jobs:
   test:
+    name: windows helper — ${{ matrix.label }}
     strategy:
       matrix:
         include:
           - os: windows-latest
+            label: windows-msys
             shell: powershell
           - os: windows-11-arm
+            label: windows-arm
             shell: powershell
     defaults:
       run:

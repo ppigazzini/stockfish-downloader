@@ -3,34 +3,40 @@ on: [push, pull_request]
 permissions: read-all
 jobs:
   test:
+    name: posix helper — ${{ matrix.label }}
     strategy:
       matrix:
         include:
           - os: ubuntu-24.04
+            label: ubuntu
             shell: bash
             flags_cmd: awk '/^flags[ \t]*:|^Features[ \t]*:/{gsub(/^flags[ \t]*:[ \t]*|^Features[ \t]*:[ \t]*|[_.]/, ""); line=$0} END{print line}' /proc/cpuinfo
             extract_cmd: tar -xvf
             ext: '.tar'
             exe: ''
           - os: macos-15-intel
+            label: macos-intel
             shell: bash
             flags_cmd: sysctl -n machdep.cpu.features machdep.cpu.leaf7_features | tr '\n' ' ' | tr '[:upper:]' '[:lower:]' | tr -d '_.'
             extract_cmd: tar -xvf
             ext: '.tar'
             exe: ''
           - os: macos-15
+            label: macos-arm
             shell: bash
             flags_cmd: sysctl -a | awk '/hw.optional/ && $2 == 1 {print $1}' | awk -F. '{print $NF}' | awk '{gsub(/^FEAT/, ""); print}' | tr -d ':' | tr '\n' ' ' | tr '[:upper:]' '[:lower:]' | tr -d '_.'
             extract_cmd: tar -xvf
             ext: '.tar'
             exe: ''
           - os: windows-latest
+            label: windows-msys
             shell: msys2 {0}
             flags_cmd: awk '/^flags[ \t]*:|^Features[ \t]*:/{gsub(/^flags[ \t]*:[ \t]*|^Features[ \t]*:[ \t]*|[_.]/, ""); line=$0} END{print line}' /proc/cpuinfo
             extract_cmd: unzip
             ext: '.zip'
             exe: '.exe'
           - os: windows-11-arm
+            label: windows-arm
             shell: msys2 {0}
             flags_cmd: awk '/^flags[ \t]*:|^Features[ \t]*:/{gsub(/^flags[ \t]*:[ \t]*|^Features[ \t]*:[ \t]*|[_.]/, ""); line=$0} END{print line}' /proc/cpuinfo
             extract_cmd: unzip
